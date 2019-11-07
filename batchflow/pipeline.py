@@ -1,6 +1,7 @@
 """ Contains pipeline class """
 import sys
 from functools import partial
+from copy import deepcopy
 import traceback
 import concurrent.futures as cf
 import asyncio
@@ -69,7 +70,7 @@ class Pipeline:
             config = config or {}
             _config = pipeline.config or {}
             self.config = {**config, **_config}
-            self._actions = actions or pipeline._actions[:]
+            self._actions = actions or deepcopy(pipeline._actions)
             if self.num_actions == 1:
                 if proba is not None:
                     if self.get_last_action_repeat() is None:
@@ -236,7 +237,7 @@ class Pipeline:
 
     def _add_action(self, name, *args, _name=None, _args=None, **kwargs):
         """ Add new action to the log of future actions """
-        actions = self._actions.copy()
+        actions = deepcopy(self._actions)
         if name == CALL_FROM_NS_ID:
             method = self.get_method(_name)
             save_to = kwargs.pop('save_to', None)
